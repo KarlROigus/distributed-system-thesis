@@ -24,11 +24,10 @@ HTTP/2 or HTTP/3 depending on the test configuration.
            +-----------+        |           |
                                 |           |
            +-----------+        +-----------+
-           | Client 3  |
+           | Client 3  | ---->
            +-----------+
 
--   **Clients (1--3)** --- send data periodically (e.g., random numbers
-    or metrics).
+-   **Clients (1--3)** --- send data periodically (e.g., weather data or coefficents).
 -   **Core** --- receives incoming data, aggregates (e.g., computes
     averages), and forwards results.
 -   **Visualizer** --- exposes aggregated data for viewing (e.g., via
@@ -36,28 +35,6 @@ HTTP/2 or HTTP/3 depending on the test configuration.
 
 All services run in independent containers to simulate real distributed
 environments.
-
-------------------------------------------------------------------------
-
-## 📁 Repository Structure
-
-    distributed-system-thesis/
-    ├── client1/
-    │   ├── src/
-    │   └── Cargo.toml
-    ├── client2/
-    ├── client3/
-    ├── core/
-    │   ├── src/
-    │   └── Cargo.toml
-    ├── visualizer/
-    │   ├── src/
-    │   └── Cargo.toml
-    ├── docker-compose.yml
-    └── README.md
-
-Each service is a **separate Rust crate** with its own `Cargo.toml`,
-dependencies, and Dockerfile.
 
 ------------------------------------------------------------------------
 
@@ -112,24 +89,21 @@ Stop:
 docker compose down
 ```
 
-Clean everything:
+Clean data from memory:
 
 ``` bash
-docker system prune -af
-docker volume prune -f
-docker builder prune -af
+./docker-cleanup.sh
 ```
 
 ------------------------------------------------------------------------
 
 ## 📊 Output and Visualization
 
--   Clients send random values to the Core.
+-   Clients send values to the Core.
 -   Core aggregates (e.g., mean, rolling average).
 -   Visualizer exposes `/metrics` or a small dashboard.
 -   You capture timestamps at all hops to compute latency differences.
 
-You can export data into CSV or JSON for thesis graphs.
 
 ------------------------------------------------------------------------
 
@@ -146,4 +120,4 @@ Your thesis will analyze raw measurements collected from this system.
 
 ## 📄 License
 
-This project is created for academic purposes. You may adapt it freely.
+This project is created for academic purposes.
