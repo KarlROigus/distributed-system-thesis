@@ -1,11 +1,11 @@
 # Use official Rust image
-FROM rust:1.78
+FROM rust:1.83
 
 # Set working directory
 WORKDIR /usr/src/client1
 
 # Copy Cargo files first for caching dependencies
-COPY Cargo.toml Cargo.lock ./
+COPY Cargo.toml ./
 
 # Copy source code
 COPY src ./src

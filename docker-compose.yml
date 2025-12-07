@@ -6,20 +6,8 @@ services:
       dockerfile: Dockerfile
     networks:
       - mynet
-
-  client2:
-    build:
-      context: ./client2
-      dockerfile: Dockerfile
-    networks:
-      - mynet
-
-  client3:
-    build:
-      context: ./client3
-      dockerfile: Dockerfile
-    networks:
-      - mynet
+    depends_on:
+      - core
 
   core:
     build:
@@ -27,19 +15,6 @@ services:
       dockerfile: Dockerfile
     networks:
       - mynet
-    depends_on:
-      - client1
-      - client2
-      - client3
-
-  visualizer:
-    build:
-      context: ./visualizer
-      dockerfile: Dockerfile
-    networks:
-      - mynet
-    depends_on:
-      - core
 
 networks:
   mynet:
