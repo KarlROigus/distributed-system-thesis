@@ -158,3 +158,4 @@ socket.on('connect_error', (error) => {
     document.getElementById('status').className = 'status disconnected';
 });
 
+

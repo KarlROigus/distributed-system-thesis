@@ -3,8 +3,7 @@ members = [
     "client1",
     "client2",
     "client3",
-    "core",
-    "visualizer"
+    "core"
 ]
 
 # to build serices: cargo build --workspace
