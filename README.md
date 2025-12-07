@@ -1,216 +1,149 @@
-Distributed Sensor System – Thesis Project
+# Distributed System Thesis -- HTTP/2 vs HTTP/3
 
-A modular distributed system built in Rust, designed to simulate and orchestrate multiple sensor clients sending data to a centralized core service. This project serves as the implementation component of a bachelor’s/master’s thesis on distributed architectures, communication models, and concurrency in modern systems.
+This repository contains the implementation and experiments for a
+bachelor thesis focusing on comparing **HTTP/2** and **HTTP/3**
+performance in a **distributed data aggregation system**.
 
-📌 Overview
+The goal of this project is to measure: - **Latency** - **Fault
+tolerance** - **Throughput** - **Connection behavior under load** -
+**Impact of transport protocols (TCP vs QUIC)**
 
-This project consists of several independent micro-services, each running in its own Docker container:
+The project consists of **five Rust microservices**, running over either
+HTTP/2 or HTTP/3 depending on the test configuration.
 
-Core – Central service that receives, validates, and stores/processes incoming data.
+------------------------------------------------------------------------
 
-Client1 – A simulated sensor client that periodically generates random measurements and sends them to the core.
+## 🚀 Architecture Overview
 
-Client2+ – Reserved for additional experiments (load testing, fault injection, scaling).
+           +-----------+        +-----------+
+           | Client 1  | ---->  |           |
+           +-----------+        |           |
+                                |           |
+           +-----------+        |   Core    | ----> Visualizer
+           | Client 2  | ---->  |           |
+           +-----------+        |           |
+                                |           |
+           +-----------+        +-----------+
+           | Client 3  |
+           +-----------+
 
-All services are written in Rust 2021, using Tokio for async execution and Warp/Reqwest for HTTP communication.
+-   **Clients (1--3)** --- send data periodically (e.g., random numbers
+    or metrics).
+-   **Core** --- receives incoming data, aggregates (e.g., computes
+    averages), and forwards results.
+-   **Visualizer** --- exposes aggregated data for viewing (e.g., via
+    HTTP API or dashboard).
 
-🎯 Goal of This System
+All services run in independent containers to simulate real distributed
+environments.
 
-The system is designed to demonstrate:
+------------------------------------------------------------------------
 
-Distributed communication patterns (client → core)
+## 📁 Repository Structure
 
-Asynchronous processing with Rust’s runtime (tokio)
+    distributed-system-thesis/
+    ├── client1/
+    │   ├── src/
+    │   └── Cargo.toml
+    ├── client2/
+    ├── client3/
+    ├── core/
+    │   ├── src/
+    │   └── Cargo.toml
+    ├── visualizer/
+    │   ├── src/
+    │   └── Cargo.toml
+    ├── docker-compose.yml
+    └── README.md
 
-Isolation of services using Docker
+Each service is a **separate Rust crate** with its own `Cargo.toml`,
+dependencies, and Dockerfile.
 
-Fault tolerance and modularity in microservice systems
+------------------------------------------------------------------------
 
-Scalability and extensibility of distributed client architectures
+## 🛠 Technologies Used
 
-It provides a minimal but realistic example of building distributed applications in Rust.
+### **Rust**
 
-🧱 Architecture
-+------------+        HTTP POST        +-------------+
-|  Client 1  | -----------------------> |    Core     |
-| (Sensor)   |                          |  Receiver   |
-+------------+                          +-------------+
+-   High‑performance, memory‑safe systems programming language.
+-   Ideal for microservices and protocol‑level testing.
 
-+------------+
-|  Client 2  |  (future extension)
-+------------+
+### **Tokio**
 
-+------------+
-|  Client n  |  (future extension)
-+------------+
+-   Asynchronous runtime used for handling concurrent requests
+    efficiently.
 
+### **Hyper / Warp / Reqwest**
 
-Clients generate data (e.g., random values) at a configurable interval.
+-   HTTP servers and clients.
+-   Hyper supports HTTP/2 out of the box.
+-   HTTP/3 is implemented via QUIC libraries such as `quinn`.
 
-Core exposes an HTTP endpoint /data.
+### **Docker & Docker Compose**
 
-Clients send JSON payloads to Core.
+-   Each service runs in its own isolated container.
+-   Networking is reproducible and measurable.
 
-Core prints/logs/stores the data (depending on thesis experiments).
+------------------------------------------------------------------------
 
-⚙️ Technologies Used
-Rust
+## 🧪 Experiments
 
-Modern system programming language emphasizing:
+The system is used to test: - Client→Core latency in HTTP/2 vs HTTP/3 -
+Jitter and packet loss impact - QUIC connection migration - Throughput
+under simultaneous client load - Behavior during Core restarts (fault
+tolerance) - Visualization of aggregated metrics
 
-memory safety
+You can modify experiment parameters using environment variables or
+Docker Compose settings.
 
-zero-cost abstractions
+------------------------------------------------------------------------
 
-fear-free concurrency
+## ▶️ Running the System
 
-strong type safety
+Build and start all services:
 
-Tokio Runtime
-
-Used for:
-
-asynchronous HTTP server (Warp)
-
-asynchronous HTTP client (Reqwest)
-
-timers and periodic tasks
-Tokio acts as the “event loop” that runs async tasks, similar to Node.js’s runtime — but faster and type-safe.
-
-Warp / Reqwest
-
-Warp → lightweight async server framework used by core
-
-Reqwest → async HTTP client used by sensor clients
-
-Docker
-
-Each service is packaged in its own container. This enables:
-
-reproducible builds
-
-isolated dependencies
-
-easy cross-platform execution
-
-clean redeployment for every experiment
-
-📂 Project Structure
-.
-├── core/
-│   ├── Dockerfile
-│   ├── Cargo.toml
-│   └── src/main.rs
-│
-└── client1/
-    ├── Dockerfile
-    ├── Cargo.toml
-    └── src/main.rs
-
-
-Future clients can be added by duplicating the client1/ directory.
-
-🚀 Running the System
-1. Clean your environment (optional but recommended)
-
-A helper script removes containers, images, volumes, and build cache:
-
-./docker-clean.sh
-
-2. Build and start all services
+``` bash
 docker compose up --build
+```
 
-3. Expected Behavior
+Stop:
 
-client1 generates a random number every X seconds.
+``` bash
+docker compose down
+```
 
-It POSTs the data to core at:
+Clean everything:
 
-http://core:3030/data
+``` bash
+docker system prune -af
+docker volume prune -f
+docker builder prune -af
+```
 
+------------------------------------------------------------------------
 
-core logs the JSON payload:
+## 📊 Output and Visualization
 
-Example log:
+-   Clients send random values to the Core.
+-   Core aggregates (e.g., mean, rolling average).
+-   Visualizer exposes `/metrics` or a small dashboard.
+-   You capture timestamps at all hops to compute latency differences.
 
-Received data: {"value": 42}
+You can export data into CSV or JSON for thesis graphs.
 
-🧪 Extending the System (for your thesis experiments)
+------------------------------------------------------------------------
 
-You can extend your thesis in many directions:
+## 🎯 Thesis Goals
 
-1. Add more sensor clients
+The aim is to determine: - When is HTTP/3 actually better? - When does
+HTTP/2 outperform HTTP/3? - How QUIC's features (0‑RTT, connection
+migration) impact performance - How protocol behavior changes under
+distributed load
 
-Create new folders:
+Your thesis will analyze raw measurements collected from this system.
 
-client2/
-client3/
-...
+------------------------------------------------------------------------
 
+## 📄 License
 
-Each can simulate:
-
-temperature readings
-
-GPS coordinates
-
-load testing patterns
-
-failure modes
-
-2. Store data in a database
-
-For example:
-
-PostgreSQL
-
-Redis
-
-SQLite
-Add persistence and compare performance differences.
-
-3. Introduce network failures
-
-Study:
-
-resilience
-
-retries
-
-exponential backoff
-
-4. Add message queues
-
-Kafka, NATS, or RabbitMQ for advanced architectures.
-
-📈 Why Rust? (Thesis Justification)
-
-Rust is a suitable choice for distributed systems because:
-
-Memory-safe without garbage collection
-
-Low runtime overhead and minimal latency
-
-Excellent async support via tokio
-
-Predictable performance
-
-Modern ecosystem for networking
-
-Compile-time guarantees prevent whole classes of failures
-
-Compared to Node.js, Go, or Python, Rust provides:
-
-higher throughput
-
-fewer runtime errors
-
-safer concurrency
-
-deterministic resource usage
-
-These characteristics make Rust ideal for implementing reliable distributed components.
-
-📝 License
-
-This project is part of a university thesis and can be reused for academic purposes.
+This project is created for academic purposes. You may adapt it freely.
