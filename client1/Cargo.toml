@@ -1,0 +1,9 @@
+[package]
+name = "client1"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tokio = { version = "1", features = ["full"] }          # async runtime
+reqwest = { version = "0.12", features = ["http2", "rustls-tls"] } # HTTP/2
+serde = { version = "1", features = ["derive"] }       # optional for JSON

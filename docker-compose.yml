@@ -1,0 +1,46 @@
+version: "3.9"
+services:
+  client1:
+    build:
+      context: ./client1
+      dockerfile: Dockerfile
+    networks:
+      - mynet
+
+  client2:
+    build:
+      context: ./client2
+      dockerfile: Dockerfile
+    networks:
+      - mynet
+
+  client3:
+    build:
+      context: ./client3
+      dockerfile: Dockerfile
+    networks:
+      - mynet
+
+  core:
+    build:
+      context: ./core
+      dockerfile: Dockerfile
+    networks:
+      - mynet
+    depends_on:
+      - client1
+      - client2
+      - client3
+
+  visualizer:
+    build:
+      context: ./visualizer
+      dockerfile: Dockerfile
+    networks:
+      - mynet
+    depends_on:
+      - core
+
+networks:
+  mynet:
+    driver: bridge

@@ -1,0 +1,10 @@
+[workspace]
+members = [
+    "client1",
+    "client2",
+    "client3",
+    "core",
+    "visualizer"
+]
+
+# to build serices: cargo build --workspace
