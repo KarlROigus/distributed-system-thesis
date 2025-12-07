@@ -114,8 +114,6 @@ HTTP/2 outperform HTTP/3? - How QUIC's features (0‑RTT, connection
 migration) impact performance - How protocol behavior changes under
 distributed load
 
-Your thesis will analyze raw measurements collected from this system.
-
 ------------------------------------------------------------------------
 
 ## 📄 License
