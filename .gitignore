@@ -1,0 +1,15 @@
+# Rust build artifacts
+/target/
+target/
+
+
+# Editor settings
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+*~
+
+# Optional: Cargo backup / temp files
+**/*.rs.bk

@@ -15,6 +15,17 @@ services:
       dockerfile: Dockerfile
     networks:
       - mynet
+    depends_on:
+      - visualizer
+
+  visualizer:
+    build:
+      context: ./visualizer
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    networks:
+      - mynet
 
 networks:
   mynet:
